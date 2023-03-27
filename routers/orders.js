@@ -127,17 +127,16 @@ router.get('/get/totalsales', async (req, res) => {
 })
 
 //get order count
-router.get(`/get/count`, async (req, res) =>{
-    const orderCount = await Order.countDocuments()
-
-    if(!orderCount){
-        res.status(500).json({success: false})
+router.get('/get/count', async (req, res) => {
+    const orderCount = await Order.countDocuments();
+  
+    if (!orderCount) {
+      res.status(500).json({ success: false });
     }
-
     res.send({
-        orderCount: orderCount
+      orderCount: orderCount,
     });
-});
+  });
 
 //get user orders
 router.get(`/get/userorders/:userid`, async (req, res) =>{

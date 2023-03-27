@@ -61,7 +61,7 @@ router.put('/:id', async (req, res) => {
         {
             name: req.body.name,
             email: req.body.email,
-            passwordHash: bcrypt.newPassword,
+            passwordHash: newPassword,
             phone: req.body.phone,
             isAdmin: req.body.isAdmin,
             street: req.body.street,
@@ -80,15 +80,40 @@ router.put('/:id', async (req, res) => {
     res.send(user)
 })
 
-//login route with username and password checking
-router.post('/login', async (req, res) => {
-    const user = await User.findOne({email: req.body.email});
-    const secret = process.env.SECRET
+// //login route with username and password checking
+// router.post('/login', async (req, res) => {
+//     const user = await User.findOne({email: req.body.email});
+//     const secret = process.env.secret;
 
+//     if(!user){
+//         return res.status(400).send('User not found');
+//     }
+
+//     if(user && bcrypt.compareSync(req.body.password, user.passwordHash)){
+//         const token = jwt.sign(
+//             {
+//                 userId: user.id,
+//                 isAdmin: user.isAdmin
+//             },
+//             secret,
+//             {expiresIn : '1d'}
+//         )
+//         console.log("Here i am")
+//         return res.status(200).send({user: user.email, token: token})
+//     }else{
+//         res.status(400).send('Password is Wrong')
+//     }
+
+// })
+
+router.post('/login', async (req, res) => {
+    const user = await User.findOne({email: req.body.email})
+    const secret = process.env.secret;
     if(!user){
         return res.status(400).send('User not found');
     }
 
+    // if(user && req.body.password === user.passwordHash){
     if(user && bcrypt.compareSync(req.body.password, user.passwordHash)){
         const token = jwt.sign(
             {
@@ -96,15 +121,17 @@ router.post('/login', async (req, res) => {
                 isAdmin: user.isAdmin
             },
             secret,
-            {expiresIn : '1d'}
+            {expiresIn: '1d'}
         )
-        
-        res.status(200).send({user: user.email, token: token})
-    }else{
-        res.status(400).send('Password is Wrong')
+        res.status(200).send({user: user.email, token: token});
+        console.log("token"+ token);
+    }else {
+        return res.status(400).send('password is wrong!');
     }
 
+    
 })
+
 
 //register a user route
 router.post('/register', async (req, res)=>{
@@ -129,7 +156,7 @@ router.post('/register', async (req, res)=>{
 
 //get users count
 router.get(`/get/count`, async (req, res) =>{
-    const userCount = await User.countDocuments()
+    const userCount = await User.countDocuments((count) => count)
 
     if(!userCount){
         res.status(500).json({success: false})

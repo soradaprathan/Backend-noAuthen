@@ -1,21 +1,19 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const morgan = require('morgan');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const authJwt = require('./helpers/jwt');
-const errorHandler = require('./helpers/error-handler')
+const bodyParser = require("body-parser");
+const morgan = require("morgan");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv/config");
+const authJwt = require("./helpers/jwt");
+const errorHandler = require("./helpers/error-handler");
 
 //Environment Variables
-require('dotenv').config();
-const api = process.env.API_URL;
+// require('dotenv').config();
+
 const db = process.env.CONNECTION_STRING;
 
-//Routes
-const productsRoutes = require('./routers/products');
-const ordersRoutes = require('./routers/orders');
-const usersRoutes = require('./routers/users');
-const categoriesRoutes = require('./routers/categories');
+
 
 //Middleware
 app.use(cors());
@@ -29,7 +27,14 @@ app.use('/public/uploads', express.static(__dirname + '/public/uploads'))
 //error handler
 app.use(errorHandler);
 
-//Routers
+//Routes
+const productsRoutes = require('./routers/products');
+const ordersRoutes = require('./routers/orders');
+const usersRoutes = require('./routers/users');
+const categoriesRoutes = require('./routers/categories');
+
+const api = process.env.API_URL;
+
 app.use(`${api}/products`, productsRoutes)
 app.use(`${api}/orders`, ordersRoutes)
 app.use(`${api}/users`, usersRoutes)
@@ -37,6 +42,7 @@ app.use(`${api}/categories`, categoriesRoutes)
 
 //Database
 mongoose.connect(db ,{
+    useNewUrlParser: true,
     useUnifiedTopology: true,
     dbName: 'algorhythm-eshop'
 })
